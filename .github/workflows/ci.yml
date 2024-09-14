@@ -39,7 +39,6 @@ jobs:
         run: |
           cd signalr-cosmos-frontend
           npm install
-          npm audit fix --force
           cd ..
           dotnet restore
 
