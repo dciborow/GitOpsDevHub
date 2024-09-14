@@ -39,21 +39,21 @@ jobs:
         run: |
           cd signalr-cosmos-frontend
           npm install
-          cd ..
+          cd ../SignalRCosmosDemo
           dotnet restore
 
       - name: Run tests
         run: |
           cd signalr-cosmos-frontend
           npm test
-          cd ..
+          cd ../SignalRCosmosDemo
           dotnet test
 
       - name: Build project
         run: |
           cd signalr-cosmos-frontend
           npm run build
-          cd ..
+          cd ../SignalRCosmosDemo
           dotnet build
 
       - name: Deploy
