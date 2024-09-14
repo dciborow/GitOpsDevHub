@@ -16,7 +16,14 @@ function App() {
 
     connection.start()
       .then(() => console.log('Connected to SignalR'))
-      .catch(err => console.log('Error connecting to SignalR: ', err));
+      .catch(err => {
+        console.error('Error connecting to SignalR:', err);
+        setTimeout(() => {
+          console.log('Attempting to reconnect...');
+          connection.start()
+            .catch(reconnectErr => console.error('Reconnection failed:', reconnectErr));
+        }, 5000);
+      });
 
     // Receive messages from SignalR hub
     connection.on('ReceiveMessage', (user, message) => {
