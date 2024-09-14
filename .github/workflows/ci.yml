@@ -37,17 +37,23 @@ jobs:
 
       - name: Install dependencies
         run: |
+          cd signalr-cosmos-frontend
           npm install
+          cd ..
           dotnet restore
 
       - name: Run tests
         run: |
+          cd signalr-cosmos-frontend
           npm test
+          cd ..
           dotnet test
 
       - name: Build project
         run: |
+          cd signalr-cosmos-frontend
           npm run build
+          cd ..
           dotnet build
 
       - name: Deploy
