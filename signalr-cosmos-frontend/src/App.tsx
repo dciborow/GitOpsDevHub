@@ -1,53 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import * as signalR from '@microsoft/signalr';
-import axios from 'axios';
+import React from 'react';
+import { useSignalR } from './hooks/useSignalR';
+import { useApi } from './hooks/useApi';
 
 const App: React.FC = () => {
-  const [messages, setMessages] = useState<string[]>([]);
-  const [record, setRecord] = useState<any>(null);
-  const [newRecord, setNewRecord] = useState<string>('');
-
-  useEffect(() => {
-    // Create SignalR connection
-    const connection = new signalR.HubConnectionBuilder()
-      .withUrl('http://localhost:5000/recordHub') // Your SignalR hub endpoint
-      .withAutomaticReconnect()
-      .build();
-
-    connection.start()
-      .then(() => console.log('Connected to SignalR'))
-      .catch(err => {
-        console.error('Error connecting to SignalR:', err);
-        setTimeout(() => {
-          console.log('Attempting to reconnect...');
-          connection.start()
-            .catch(reconnectErr => console.error('Reconnection failed:', reconnectErr));
-        }, 5000);
-      });
-
-    // Receive messages from SignalR hub
-    connection.on('ReceiveMessage', (user: string, message: string) => {
-      setMessages(prevMessages => [...prevMessages, `${user}: ${message}`]);
-    });
-
-    return () => {
-      connection.stop();
-    };
-  }, []);
-
-  const getRecord = async () => {
-    const response = await axios.get('http://localhost:5000/api/record/1', {
-      params: { partitionKey: 'default' }
-    });
-    setRecord(response.data);
-  };
-
-  const setNewRecordToDb = async () => {
-    await axios.post('http://localhost:5000/api/record', { data: newRecord }, {
-      params: { id: '1', partitionKey: 'default' }
-    });
-    setNewRecord('');
-  };
+  const messages = useSignalR('http://localhost:5000/recordHub');
+  const { record, newRecord, setNewRecord, getRecord, setNewRecordToDb } = useApi('http://localhost:5000/api/record', { id: '1', partitionKey: 'default' });
 
   return (
     <div className="App">
