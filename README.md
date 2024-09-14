@@ -24,7 +24,6 @@ within the file for "TODO".
 ======================================================================================
 ====================================================================================-->
 
-
 <!---------------------[  Description  ]------------------<recommended> section below------------------>
 
 # steps
@@ -69,8 +68,33 @@ How to Evaluate & Examples:
 
 <!---- [TODO]  CONTENT GOES BELOW ------->
 *Description of how to install and use the code or content goes here*
-<!------====-- CONTENT GOES ABOVE ------->
 
+### Using the Codespace Environment
+
+To use the Codespace environment for this project, follow these steps:
+
+1. **Open Codespace**:
+   - Navigate to the repository on GitHub.
+   - Click on the "Code" button and select "Open with Codespaces".
+   - If you don't have a Codespace created, click on "New Codespace".
+
+2. **Wait for Setup**:
+   - The Codespace will automatically set up the development environment based on the configurations in the repository.
+   - This includes installing all necessary dependencies and extensions for React/TypeScript and C# development.
+
+3. **Start Coding**:
+   - Once the setup is complete, you can start coding immediately.
+   - The environment is pre-configured with all the tools and extensions you need for development, linting, formatting, and debugging.
+
+4. **Run and Debug**:
+   - Use the integrated terminal and debugger in VSCode to run and debug your code.
+   - The environment includes tasks for building and debugging both TypeScript and C# projects.
+
+5. **CI/CD Integration**:
+   - The Codespace is integrated with the existing CI/CD pipelines.
+   - You can run tests and deploy directly from the Codespace environment.
+
+<!------====-- CONTENT GOES ABOVE ------->
 
 <!-----------------------[ Prerequisites  ]-----------------<optional> section below--------------------->
 ### Prerequisites
@@ -85,8 +109,15 @@ How to Evaluate & Examples:
 
 <!---- [TODO]  CONTENT GOES BELOW ------->
 There are no prerequisites required to run this code or use this repository.
-<!------====-- CONTENT GOES ABOVE ------->
 
+To set up the Codespace environment, ensure you have the following tools installed:
+
+- **Git**: Version control system to clone the repository.
+- **GitHub CLI**: To manage Codespaces from the command line (optional).
+- **Docker**: Required for running the development container.
+- **Visual Studio Code**: Recommended for the best development experience.
+
+<!------====-- CONTENT GOES ABOVE ------->
 
 <!-----------------------[  Installing  ]-------------------<optional> section below------------------>
 ### Installing
@@ -101,8 +132,25 @@ How to Evaluate & Examples:
 
 <!---- [TODO]  CONTENT GOES BELOW ------->
 This repository does not hold installable content.
-<!------====-- CONTENT GOES ABOVE ------->
 
+To set up the Codespace environment, follow these steps:
+
+1. **Clone the Repository**:
+   ```sh
+   git clone https://github.com/dciborow/GitOpsDevHub.git
+   cd GitOpsDevHub
+   ```
+
+2. **Open in Codespace**:
+   - Open the repository in a Codespace as described in the "Getting Started" section.
+
+3. **Wait for Setup**:
+   - The Codespace will automatically set up the development environment based on the configurations in the repository.
+
+4. **Start Coding**:
+   - Once the setup is complete, you can start coding immediately.
+
+<!------====-- CONTENT GOES ABOVE ------->
 
 <!-----------------------[  Tests  ]------------------------<optional> section below--------------------->
 <!-- 
@@ -129,7 +177,6 @@ Give an example
 -->
 <!------====-- CONTENT GOES ABOVE ------->
 
-
 <!-----------------------[  Deployment (CI/CD)  ]-----------<optional> section below--------------------->
 ### Deployment (CI/CD)
 
@@ -138,7 +185,7 @@ INSTRUCTIONS:
 - Describe how to deploy if applicable. Deployment includes website deployment, packages, or artifacts.
 - Avoid potential new contributor frustrations by making it easy to know about all compliance and continuous integration 
     that will be run before pull request approval.
-- NOTE: Setting up an Azure DevOps pipeline gets you all 1ES compliance and build tooling such as component governance. 
+- NOTE: Setting up an Azure DevOps pipeline gets you all 1ES compliance and build tooling such as component governance.
   - More info: https://aka.ms/StartRight/README-Template/integrate-ado
 
 How to Evaluate & Examples:
@@ -147,8 +194,10 @@ How to Evaluate & Examples:
 
 <!---- [TODO]  CONTENT GOES BELOW ------->
 _At this time, the repository does not use continuous integration or produce a website, artifact, or anything deployed._
-<!------====-- CONTENT GOES ABOVE ------->
 
+The Codespace environment is integrated with the existing CI/CD pipelines. You can run tests and deploy directly from the Codespace environment.
+
+<!------====-- CONTENT GOES ABOVE ------->
 
 <!-----------------------[  Versioning and Changelog  ]-----<optional> section below--------------------->
 
@@ -167,7 +216,6 @@ How to Evaluate & Examples:
 <!-- We use [SemVer](https://aka.ms/StartRight/README-Template/semver) for versioning. -->
 <!------====-- CONTENT GOES ABOVE ------->
 
-
 -----------------------------------------------
 
 <!-----------------------[  Access  ]-----------------------<recommended> section below------------------>
@@ -185,11 +233,9 @@ How to Evaluate & Examples:
   - https://aka.ms/StartRight/README-Template/Instructions#how-to-share-an-accessible-link-to-this-repository
 -->
 
-
 <!---- [TODO]  CONTENT GOES BELOW ------->
 
 <!------====-- CONTENT GOES ABOVE ------->
-
 
 <!-----------------------[  Contributing  ]-----------------<recommended> section below------------------>
 ## Contributing
@@ -216,7 +262,6 @@ it useful to read these [tips & tricks](https://aka.ms/StartRight/README-Templat
 on InnerSource Communication.
 <!------====-- CONTENT GOES ABOVE ------->
 
-
 <!-----------------------[  Contacts  ]---------------------<recommended> section below------------------>
 <!-- 
 #### Contacts  
@@ -232,7 +277,6 @@ How to Evaluate & Examples:
 <!---- [TODO]  CONTENT GOES BELOW ------->
 
 <!------====-- CONTENT GOES ABOVE ------->
-
 
 <!-----------------------[  Support & Reuse Expectations  ]-----<recommended> section below-------------->
  
@@ -256,7 +300,6 @@ _The creators of this repository **DO NOT EXPECT REUSE**._
 If you do use it, please let us know via an email or 
 leave a note in an issue, so we can best understand the value of this repository.
 <!------====-- CONTENT GOES ABOVE ------->
-
 
 <!-----------------------[  Limitations  ]----------------------<optional> section below----------------->
 
@@ -282,7 +325,6 @@ How to Evaluate & Examples:
 <!------====-- CONTENT GOES ABOVE ------->
 
 --------------------------------------------
-
 
 <!-----------------------[  Links to Platform Policies  ]-------<recommended> section below-------------->
 ## How to Accomplish Common User Actions

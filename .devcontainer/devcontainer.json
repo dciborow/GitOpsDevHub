@@ -1,0 +1,22 @@
+{
+  "name": "React-Typescript-CSharp-DevContainer",
+  "image": "mcr.microsoft.com/vscode/devcontainers/base:0-bullseye",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "16"
+    },
+    "ghcr.io/devcontainers/features/dotnet:1": {
+      "version": "6.0"
+    },
+    "ghcr.io/devcontainers/features/azure-cli:1": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:1": {}
+  },
+  "extensions": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "ms-dotnettools.csharp",
+    "eamodio.gitlens",
+    "msjsdiag.debugger-for-chrome"
+  ],
+  "postCreateCommand": "npm install && dotnet restore"
+}

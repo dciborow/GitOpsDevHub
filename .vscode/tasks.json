@@ -1,0 +1,50 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build",
+      "type": "shell",
+      "command": "npm run build",
+      "group": "build",
+      "problemMatcher": ["$tsc"]
+    },
+    {
+      "label": "watch",
+      "type": "shell",
+      "command": "npm run watch",
+      "isBackground": true,
+      "problemMatcher": ["$tsc-watch"]
+    },
+    {
+      "label": "test",
+      "type": "shell",
+      "command": "npm test",
+      "group": "test",
+      "problemMatcher": ["$mocha"]
+    },
+    {
+      "label": "build-csharp",
+      "type": "process",
+      "command": "dotnet",
+      "args": ["build"],
+      "group": "build",
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "watch-csharp",
+      "type": "process",
+      "command": "dotnet",
+      "args": ["watch", "run"],
+      "isBackground": true,
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "test-csharp",
+      "type": "process",
+      "command": "dotnet",
+      "args": ["test"],
+      "group": "test",
+      "problemMatcher": "$msCompile"
+    }
+  ]
+}
