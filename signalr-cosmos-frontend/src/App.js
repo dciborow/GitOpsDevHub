@@ -7,10 +7,13 @@ function App() {
   const [record, setRecord] = useState(null);
   const [newRecord, setNewRecord] = useState('');
 
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+  const SIGNALR_HUB_URL = process.env.REACT_APP_SIGNALR_HUB_URL || `${API_BASE_URL}/recordHub`;
+
   useEffect(() => {
     // Create SignalR connection
     const connection = new signalR.HubConnectionBuilder()
-      .withUrl('http://localhost:5000/recordHub') // Your SignalR hub endpoint
+      .withUrl(SIGNALR_HUB_URL)
       .withAutomaticReconnect()
       .build();
 
@@ -33,17 +36,17 @@ function App() {
     return () => {
       connection.stop();
     };
-  }, []);
+  }, [SIGNALR_HUB_URL]);
 
   const getRecord = async () => {
-    const response = await axios.get('http://localhost:5000/api/record/1', {
+    const response = await axios.get(`${API_BASE_URL}/api/record/1`, {
       params: { partitionKey: 'default' }
     });
     setRecord(response.data);
   };
 
   const setNewRecordToDb = async () => {
-    await axios.post('http://localhost:5000/api/record', { data: newRecord }, {
+    await axios.post(`${API_BASE_URL}/api/record`, { data: newRecord }, {
       params: { id: '1', partitionKey: 'default' }
     });
     setNewRecord('');

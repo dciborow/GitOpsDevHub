@@ -248,7 +248,15 @@ cd signalr-cosmos-frontend
 npm install @microsoft/signalr axios
 ```
 
-#### Step 3: Create SignalR Connection in `App.js`
+#### Step 3: Create a `.env` file
+Create a `.env` file in the root of your React project and add the following environment variables:
+
+```
+REACT_APP_API_BASE_URL=http://localhost:5000
+REACT_APP_SIGNALR_HUB_URL=${REACT_APP_API_BASE_URL}/recordHub
+```
+
+#### Step 4: Create SignalR Connection in `App.js`
 
 ```jsx
 import React, { useEffect, useState } from 'react';
@@ -260,10 +268,13 @@ function App() {
   const [record, setRecord] = useState(null);
   const [newRecord, setNewRecord] = useState('');
 
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+  const SIGNALR_HUB_URL = process.env.REACT_APP_SIGNALR_HUB_URL || `${API_BASE_URL}/recordHub`;
+
   useEffect(() => {
     // Create SignalR connection
     const connection = new signalR.HubConnectionBuilder()
-      .withUrl('http://localhost:5000/recordHub') // Your SignalR hub endpoint
+      .withUrl(SIGNALR_HUB_URL)
       .withAutomaticReconnect()
       .build();
 
@@ -279,17 +290,17 @@ function App() {
     return () => {
       connection.stop();
     };
-  }, []);
+  }, [SIGNALR_HUB_URL]);
 
   const getRecord = async () => {
-    const response = await axios.get('http://localhost:5000/api/record/1', {
+    const response = await axios.get(`${API_BASE_URL}/api/record/1`, {
       params: { partitionKey: 'default' }
     });
     setRecord(response.data);
   };
 
   const setNewRecordToDb = async () => {
-    await axios.post('http://localhost:5000/api/record', { data: newRecord }, {
+    await axios.post(`${API_BASE_URL}/api/record`, { data: newRecord }, {
       params: { id: '1', partitionKey: 'default' }
     });
     setNewRecord('');
@@ -504,10 +515,10 @@ How to Evaluate & Examples:
 <!------====-- CONTENT GOES ABOVE ------->
 
 <!-----------------------[  Support & Reuse Expectations  ]-----<recommended> section below-------------->
- 
+
 ### Support & Reuse Expectations
- 
- 
+
+
 <!-- 
 INSTRUCTIONS:
 - To avoid misalignments use this section to set expectations in regards to current and future state of:
