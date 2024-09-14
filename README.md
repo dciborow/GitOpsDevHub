@@ -67,7 +67,6 @@ How to Evaluate & Examples:
 -->
 
 <!---- [TODO]  CONTENT GOES BELOW ------->
-*Description of how to install and use the code or content goes here*
 
 ### Using the Codespace Environment
 
@@ -93,6 +92,262 @@ To use the Codespace environment for this project, follow these steps:
 5. **CI/CD Integration**:
    - The Codespace is integrated with the existing CI/CD pipelines.
    - You can run tests and deploy directly from the Codespace environment.
+
+### Setting Up the Backend (SignalR + CosmosDB)
+
+You’ll need an ASP.NET Core backend with SignalR that communicates with CosmosDB.
+
+#### Step 1: Create ASP.NET Core SignalR Project
+```bash
+dotnet new webapi -n SignalRCosmosDemo
+cd SignalRCosmosDemo
+```
+
+#### Step 2: Install Required NuGet Packages
+```bash
+dotnet add package Microsoft.Azure.Cosmos
+dotnet add package Microsoft.AspNetCore.SignalR
+```
+
+#### Step 3: Create a SignalR Hub
+In your `Hubs` folder, create a `RecordHub.cs` file:
+
+```csharp
+using Microsoft.AspNetCore.SignalR;
+using System.Threading.Tasks;
+
+public class RecordHub : Hub
+{
+    public async Task SendMessage(string user, string message)
+    {
+        await Clients.All.SendAsync("ReceiveMessage", user, message);
+    }
+}
+```
+
+#### Step 4: Set Up CosmosDB Service
+Create a `CosmosService.cs` that will handle getting/setting records in CosmosDB.
+
+```csharp
+using Microsoft.Azure.Cosmos;
+using System.Threading.Tasks;
+
+public class CosmosService
+{
+    private readonly Container _container;
+
+    public CosmosService(CosmosClient cosmosClient, string databaseName, string containerName)
+    {
+        _container = cosmosClient.GetContainer(databaseName, containerName);
+    }
+
+    public async Task<T> GetRecordAsync<T>(string id, string partitionKey)
+    {
+        try
+        {
+            ItemResponse<T> response = await _container.ReadItemAsync<T>(id, new PartitionKey(partitionKey));
+            return response.Resource;
+        }
+        catch (CosmosException)
+        {
+            return default;
+        }
+    }
+
+    public async Task SetRecordAsync<T>(T record, string id, string partitionKey)
+    {
+        await _container.UpsertItemAsync(record, new PartitionKey(partitionKey));
+    }
+}
+```
+
+#### Step 5: Add SignalR, CosmosDB, and DI in `Startup.cs`
+Configure services and SignalR:
+
+```csharp
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddControllers();
+    
+    // CosmosDB configuration
+    services.AddSingleton<CosmosClient>(sp =>
+        new CosmosClient(Configuration["CosmosDB:ConnectionString"]));
+    
+    services.AddSingleton<CosmosService>(sp =>
+        new CosmosService(
+            sp.GetRequiredService<CosmosClient>(),
+            Configuration["CosmosDB:DatabaseName"],
+            Configuration["CosmosDB:ContainerName"]));
+
+    // Add SignalR
+    services.AddSignalR();
+}
+
+public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+{
+    app.UseRouting();
+
+    app.UseEndpoints(endpoints =>
+    {
+        endpoints.MapControllers();
+        endpoints.MapHub<RecordHub>("/recordHub");
+    });
+}
+```
+
+#### Step 6: Add an API Controller to Interact with CosmosDB
+Create a `RecordController.cs` file to handle CosmosDB interactions.
+
+```csharp
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
+
+[ApiController]
+[Route("api/[controller]")]
+public class RecordController : ControllerBase
+{
+    private readonly CosmosService _cosmosService;
+    private readonly IHubContext<RecordHub> _hubContext;
+
+    public RecordController(CosmosService cosmosService, IHubContext<RecordHub> hubContext)
+    {
+        _cosmosService = cosmosService;
+        _hubContext = hubContext;
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> Get(string id, [FromQuery] string partitionKey)
+    {
+        var record = await _cosmosService.GetRecordAsync<dynamic>(id, partitionKey);
+        if (record == null) return NotFound();
+        return Ok(record);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Set([FromBody] dynamic record, [FromQuery] string id, [FromQuery] string partitionKey)
+    {
+        await _cosmosService.SetRecordAsync(record, id, partitionKey);
+        await _hubContext.Clients.All.SendAsync("ReceiveMessage", "server", $"Record {id} updated");
+        return Ok();
+    }
+}
+```
+
+#### Step 7: Configure `appsettings.json` for CosmosDB
+```json
+{
+  "CosmosDB": {
+    "ConnectionString": "<Your CosmosDB Connection String>",
+    "DatabaseName": "YourDatabase",
+    "ContainerName": "YourContainer"
+  }
+}
+```
+
+### Setting Up the Frontend (React with SignalR)
+
+#### Step 1: Create a React App
+```bash
+npx create-react-app signalr-cosmos-frontend
+cd signalr-cosmos-frontend
+```
+
+#### Step 2: Install Required Packages
+```bash
+npm install @microsoft/signalr axios
+```
+
+#### Step 3: Create SignalR Connection in `App.js`
+
+```jsx
+import React, { useEffect, useState } from 'react';
+import * as signalR from '@microsoft/signalr';
+import axios from 'axios';
+
+function App() {
+  const [messages, setMessages] = useState([]);
+  const [record, setRecord] = useState(null);
+  const [newRecord, setNewRecord] = useState('');
+
+  useEffect(() => {
+    // Create SignalR connection
+    const connection = new signalR.HubConnectionBuilder()
+      .withUrl('http://localhost:5000/recordHub') // Your SignalR hub endpoint
+      .withAutomaticReconnect()
+      .build();
+
+    connection.start()
+      .then(() => console.log('Connected to SignalR'))
+      .catch(err => console.log('Error connecting to SignalR: ', err));
+
+    // Receive messages from SignalR hub
+    connection.on('ReceiveMessage', (user, message) => {
+      setMessages(prevMessages => [...prevMessages, `${user}: ${message}`]);
+    });
+
+    return () => {
+      connection.stop();
+    };
+  }, []);
+
+  const getRecord = async () => {
+    const response = await axios.get('http://localhost:5000/api/record/1', {
+      params: { partitionKey: 'default' }
+    });
+    setRecord(response.data);
+  };
+
+  const setNewRecordToDb = async () => {
+    await axios.post('http://localhost:5000/api/record', { data: newRecord }, {
+      params: { id: '1', partitionKey: 'default' }
+    });
+    setNewRecord('');
+  };
+
+  return (
+    <div className="App">
+      <h1>SignalR and CosmosDB Demo</h1>
+
+      <div>
+        <h2>Record</h2>
+        <button onClick={getRecord}>Get Record</button>
+        <pre>{JSON.stringify(record, null, 2)}</pre>
+      </div>
+
+      <div>
+        <h2>Update Record</h2>
+        <input value={newRecord} onChange={e => setNewRecord(e.target.value)} />
+        <button onClick={setNewRecordToDb}>Update</button>
+      </div>
+
+      <div>
+        <h2>Messages</h2>
+        {messages.map((msg, idx) => <p key={idx}>{msg}</p>)}
+      </div>
+    </div>
+  );
+}
+
+export default App;
+```
+
+### Run the POC
+- **Backend**: Run the ASP.NET Core SignalR server and API:
+  ```bash
+  dotnet run
+  ```
+- **Frontend**: Start the React frontend:
+  ```bash
+  npm start
+  ```
+
+### How This Works:
+1. The React app connects to the **SignalR Hub** (`RecordHub`) when the page loads.
+2. Users can trigger **CosmosDB get/set** operations via the API endpoints (`/api/record`).
+3. When the record is updated, the backend **pushes a message** to all connected SignalR clients, notifying them that the record was updated.
+4. The **React frontend** receives real-time updates and displays them without polling.
+
+This POC demonstrates the basic structure of integrating **SignalR** for real-time communication, with **CosmosDB** for storage operations. Let me know if you'd like further details or customization for your scenario!
 
 <!------====-- CONTENT GOES ABOVE ------->
 

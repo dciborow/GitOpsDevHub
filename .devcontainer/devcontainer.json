@@ -18,5 +18,5 @@
     "eamodio.gitlens",
     "msjsdiag.debugger-for-chrome"
   ],
-  "postCreateCommand": "npm install && dotnet restore"
+  "postCreateCommand": "npm install && dotnet restore && cd signalr-cosmos-frontend && npm install && cd ../SignalRCosmosDemo && dotnet restore"
 }
