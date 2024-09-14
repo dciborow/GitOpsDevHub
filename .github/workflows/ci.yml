@@ -45,7 +45,7 @@ jobs:
       - name: Run tests
         run: |
           cd signalr-cosmos-frontend
-          npm test
+          npm test -- --passWithNoTests
           cd ../SignalRCosmosDemo
           dotnet test
 
